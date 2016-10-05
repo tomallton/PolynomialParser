@@ -1,6 +1,5 @@
 package me.zylem.polynomialparser;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,26 +54,37 @@ public class Function {
 
 	public double evaluate(double... parameter) {
 		if (parameter.length != getParameters().length)
-			throw new IllegalArgumentException(
-					"Function " + function + " requires " + getParameters().length + " parameter"
-							+ (getParameters().length != 1 ? "s" : "") + ", you have supplied " + parameter.length);
+			throw new IllegalArgumentException("Function " + function + " requires " + getParameters().length + " parameter" + (getParameters().length != 1 ? "s" : "") + ", you have supplied " + parameter.length);
 		double answer = 0;
 		String function = this.function;
+		for (int i = 0; i < function.length(); i++) {
+			String character = function.substring(i, i + 1);
+			if (isParameter(character) && (i == 0 || !isNumber(function.substring(i - 1, i))))
+				function = function.substring(0, i) + "1" + function.substring(i, function.length());
+		}
 		if (isNumber(function.substring(0, 1)) || isDecimalPoint(function.substring(0, 1)))
 			function = "+" + function;
 		for (int i = 0; i < function.length(); i++) {
 			String character = function.substring(i, i + 1);
-			if (isParameter(character))
-				function = function.substring(0, i) + "*" + function.substring(i, function.length())
-						+ (i + 2 < function.length() && (isNumber(function.substring(i + 1, i + 2))
-								|| isDecimalPoint(function.substring(i + 1, i + 2))) ? "*" : "");
+			if (isParameter(character)) {
+				function = function.substring(0, i) + "*" + parameter[getIndex(character)]
+						+ (i + 2 < function.length() && (isNumber(function.substring(i + 1, i + 2)) || isDecimalPoint(function.substring(i + 1, i + 2))) ? "_*_" : "") + function.substring(i + 1, function.length());
+				String k = (i + 2 < function.length() && (isNumber(function.substring(i + 1, i + 2)) || isDecimalPoint(function.substring(i + 1, i + 2))) ? "_*_" : "§"); 
+				System.out.println("K: " + k);
+				if ((i + 2 < function.length() &&
+				 (isNumber(function.substring(i + 1, i + 2)) ||
+				 isDecimalPoint(function.substring(i + 1, i + 2)))))
+					 System.out.println("adding m8");
+				 else
+				 System.out.println("not adding m8");
+			}
 		}
+		System.out.println(function);
 		for (int i = 0; i < function.length(); i++) {
 			String stage = "";
 			String sign = function.substring(i, i + 1);
 			String character = function.substring(i + 1, i + 2);
-			master: while (isNumber(character) || isDecimalPoint(character)
-					|| (isOperator(character) && !isSign(character))) {
+			master: while (isNumber(character) || isDecimalPoint(character) || (isOperator(character) && !isSign(character))) {
 				if (isOperator(character) && !isSign(character)) {
 					String operator = character;
 					i++;
@@ -126,8 +136,7 @@ public class Function {
 				throw new IllegalArgumentException("Functions can not start with '" + character + "'");
 			if (lastCharacter != null)
 				if (isOperator(lastCharacter) && isOperator(character))
-					throw new IllegalArgumentException(
-							"Successive operators '" + lastCharacter + character + "' not allowed");
+					throw new IllegalArgumentException("Successive operators '" + lastCharacter + character + "' not allowed");
 			lastCharacter = character;
 		}
 		for (int i = 0; i < function.length() - 1; i++) {
@@ -135,8 +144,7 @@ public class Function {
 			String character = function.substring(i + 1, i + 2);
 			while (isNumber(character) || isDecimalPoint(character)) {
 				if (isDecimalPoint(character) && stage.contains(DECIMAL_POINT))
-					throw new IllegalArgumentException(
-							"Number '" + (stage + character) + "' contains two decimal places");
+					throw new IllegalArgumentException("Number '" + (stage + character) + "' contains two decimal places");
 				stage += character;
 				i++;
 				if (i + 2 > function.length())
