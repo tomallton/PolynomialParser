@@ -69,17 +69,8 @@ public class Function {
 			if (isParameter(character)) {
 				function = function.substring(0, i) + "*" + parameter[getIndex(character)]
 						+ (i + 2 < function.length() && (isNumber(function.substring(i + 1, i + 2)) || isDecimalPoint(function.substring(i + 1, i + 2))) ? "_*_" : "") + function.substring(i + 1, function.length());
-				String k = (i + 2 < function.length() && (isNumber(function.substring(i + 1, i + 2)) || isDecimalPoint(function.substring(i + 1, i + 2))) ? "_*_" : "§"); 
-				System.out.println("K: " + k);
-				if ((i + 2 < function.length() &&
-				 (isNumber(function.substring(i + 1, i + 2)) ||
-				 isDecimalPoint(function.substring(i + 1, i + 2)))))
-					 System.out.println("adding m8");
-				 else
-				 System.out.println("not adding m8");
 			}
 		}
-		System.out.println(function);
 		for (int i = 0; i < function.length(); i++) {
 			String stage = "";
 			String sign = function.substring(i, i + 1);
